@@ -1,8 +1,9 @@
 {
-	"box": {
-		
-	},
-	"syncpair": {
-		"w:/music" : "/music"
-	}
+  "box": {
+    "key": "",
+    "secret": ""
+  },
+  "syncpair": {
+    "w:/music": "/music"
+  }
 }
