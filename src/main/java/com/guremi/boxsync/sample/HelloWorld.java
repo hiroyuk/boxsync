@@ -25,7 +25,7 @@ public class HelloWorld {
         String key = config.getString("box.key");
         String secret = config.getString("box.secret");
 
-        if (key.equals("YOUR API KEY HERE")) {
+        if (key.isEmpty()) {
             System.out.println("Before this sample app will work, you will need to change the");
             System.out.println("'key' and 'secret' values in the source code.");
             return;
@@ -41,14 +41,21 @@ public class HelloWorld {
         }
 
         BoxClient client = getAuthenticatedClient(code, key, secret);
+        showFolder(client, "0", "/", 0);
 
-        BoxFolder boxFolder = client.getFoldersManager().getFolder("0", null);
+    }
+
+    private static void showFolder(BoxClient client, String parent, String parentName, int depth) throws BoxRestException, BoxServerException, AuthFatalFailureException {
+        BoxFolder boxFolder = client.getFoldersManager().getFolder(parent, null);
         ArrayList<BoxTypedObject> folderEntries = boxFolder.getItemCollection().getEntries();
         int folderSize = folderEntries.size();
         for (int i = 0; i <= folderSize - 1; i++) {
             BoxTypedObject folderEntry = folderEntries.get(i);
             String name = (folderEntry instanceof BoxItem) ? ((BoxItem)folderEntry).getName() : "(unknown)";
-            System.out.println("i:" + i + ", Type:" + folderEntry.getType() + ", Id:" + folderEntry.getId() + ", Name:" + name);
+            LOG.info("q: {}, i:{}, type: {}, id: {}, name: {}{}", depth, i, folderEntry.getType(), folderEntry.getId(), parentName, name);
+            if (folderEntry.getType().equals("folder")) {
+                showFolder(client, folderEntry.getId(), parentName + name + "/" , depth+1);
+            }
         }
     }
 
