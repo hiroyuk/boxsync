@@ -13,8 +13,12 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LocalServer {
+    private static final Logger LOG = LoggerFactory.getLogger(LocalServer.class);
+
     private Server server;
     private String code;
     private String error;
@@ -43,6 +47,7 @@ public class LocalServer {
         sc.setHost(host);
         sc.setPort(port);
         server.addConnector(sc);
+        server.setHandler(new CallbackHander());
 
         server.start();
         return "http://" + host + ":" + port + CALLBACK_PATH;
@@ -51,7 +56,8 @@ public class LocalServer {
     public String waitForCode() throws IOException {
         lock.lock();
         try {
-            while(code == null || error == null) {
+            while(code == null && error == null) {
+                LOG.info("wait..");
                 authoriseResponse.awaitUninterruptibly();
             }
             if (error != null) {
@@ -97,6 +103,7 @@ public class LocalServer {
             try {
                 error = request.getParameter("error");
                 code = request.getParameter("code");
+                LOG.info("code:{}, error:{}", code, error);
                 authoriseResponse.signal();
             } finally {
                 lock.unlock();

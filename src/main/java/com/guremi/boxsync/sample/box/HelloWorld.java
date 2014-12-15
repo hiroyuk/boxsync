@@ -1,15 +1,14 @@
-package com.guremi.boxsync.sample;
+package com.guremi.boxsync.sample.box;
 
 import com.box.boxjavalibv2.*;
 import com.box.boxjavalibv2.dao.*;
 import com.box.boxjavalibv2.exceptions.*;
 import com.box.restclientv2.exceptions.*;
+import com.guremi.boxsync.oauth2.LocalServer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import java.io.*;
 import java.awt.Desktop;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +30,23 @@ public class HelloWorld {
             return;
         }
 
+        LocalServer localServer = new LocalServer("localhost", 4000);
         String code = "";
-        String url = "https://www.box.com/api/oauth2/authorize?response_type=code&client_id=" + key;
         try {
+            String url = "https://www.box.com/api/oauth2/authorize?response_type=code&client_id=" + key + "&redirect_uri=" + URLEncoder.encode(localServer.getRegirectUri(), "iso-8859-1");
             Desktop.getDesktop().browse(java.net.URI.create(url));
-            code = getCode();
-        } catch (IOException e) {
-            LOG.error(e.getMessage(), e);
+            code = localServer.waitForCode();
+        } catch (Exception ex) {
+            LOG.error(ex.getMessage(), ex);
+        } finally {
+            try {
+                localServer.stop();
+            } catch (Exception ex) {
+            }
         }
 
         BoxClient client = getAuthenticatedClient(code, key, secret);
         showFolder(client, "0", "/", 0);
-
     }
 
     private static void showFolder(BoxClient client, String parent, String parentName, int depth) throws BoxRestException, BoxServerException, AuthFatalFailureException {
@@ -65,45 +69,4 @@ public class HelloWorld {
         client.authenticate(bt);
         return client;
     }
-
-    private static String getCode() throws IOException {
-
-        ServerSocket serverSocket = new ServerSocket(PORT);
-        Socket socket = serverSocket.accept();
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        while (true) {
-            String code;
-            try {
-                try (BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
-                    out.write("HTTP/1.1 200 OK\r\n");
-                    out.write("Content-Type: text/html\r\n");
-                    out.write("\r\n");
-
-                    code = in.readLine();
-                    System.out.println(code);
-                    String match = "code";
-                    int loc = code.indexOf(match);
-
-                    if (loc > 0) {
-                        int httpstr = code.indexOf("HTTP") - 1;
-                        code = code.substring(code.indexOf(match), httpstr);
-                        String parts[] = code.split("=");
-                        code = parts[1];
-                        out.write("Now return to command line to see the output of the HelloWorld sample app.");
-                    } else {
-                        // It doesn't have a code
-                        out.write("Code not found in the URL!");
-                    }
-                }
-
-                return code;
-            } catch (IOException e) {
-                //error ("System: " + "Connection to server lost!");
-                System.exit(1);
-                break;
-            }
-        }
-        return "";
-    }
-
 }

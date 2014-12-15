@@ -6,13 +6,13 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>boxsync</name>
-	
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-		
+
   <dependencies>
     <dependency>
       <groupId>net.box</groupId>
@@ -29,23 +29,16 @@
       <artifactId>sqlite-jdbc</artifactId>
       <version>3.8.7</version>
     </dependency>
-
-    <!--
     <dependency>
-      <groupId>com.google.oauth-client</groupId>
-      <artifactId>google-oauth-client</artifactId>
-      <version>1.19.0</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>9.2.5.v20141112</version>
     </dependency>
     <dependency>
-      <groupId>com.google.oauth-client</groupId>
-      <artifactId>google-oauth-client-jetty</artifactId>
-      <version>1.19.0</version>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>9.2.5.v20141112</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.http-client</groupId>
-      <artifactId>google-http-client-jackson2</artifactId>
-      <version>1.19.0</version>
-    </dependency>-->
 
     <!-- logger -->
     <dependency>
