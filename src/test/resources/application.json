@@ -1,0 +1,10 @@
+{
+  "box": {
+    "key": "xxx",
+    "secret": "yyy",
+    "storepath": "./target/sqlite/"
+  },
+  "syncpair": {
+    "w:/music": "/music"
+  }
+}
