@@ -1,9 +1,15 @@
 package com.guremi.boxsync.utils;
 
+import com.guremi.boxsync.FileWatcher;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import static org.hamcrest.CoreMatchers.is;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -17,6 +23,8 @@ public class DigestUtilsTest {
 
     @Test
     public void testGetDigest() throws Exception {
+        Config config = ConfigFactory.load("application.json");
+        FileWatcher.config = config;
         Path path = Paths.get("src", "test", "resources", "testfile", "LICENSE");
         String digest = DigestUtils.getDigest(path);
 

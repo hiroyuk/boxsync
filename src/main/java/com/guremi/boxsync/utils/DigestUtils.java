@@ -1,5 +1,6 @@
 package com.guremi.boxsync.utils;
 
+import com.guremi.boxsync.store.DigestService;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
@@ -18,27 +19,34 @@ import org.slf4j.LoggerFactory;
  */
 public class DigestUtils {
     private static final Logger LOG = LoggerFactory.getLogger(DigestUtils.class);
+	private static final DigestService digestService = new DigestService();
 
-    public static String getDigest(Path path) throws IOException {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA");
-            ByteBuffer bb = ByteBuffer.allocate(10240);
-            try (SeekableByteChannel channel = Files.newByteChannel(path, StandardOpenOption.READ)) {
-                while (true) {
-                    bb.clear();
-                    int size = channel.read(bb);
-                    if (size == -1) {
-                        break;
-                    }
-                    bb.flip();
-                    md.update(bb);
-                }
-            }
-            return DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
-        } catch (NoSuchAlgorithmException ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
-        return null;
+    public static String getDigest(Path path) {
+		String digest = digestService.getCachedDigest(path);
+		LOG.debug("cached digest: {}", digest);
+
+		if (digest == null) {
+			try {
+				MessageDigest md = MessageDigest.getInstance("SHA");
+				ByteBuffer bb = ByteBuffer.allocate(10240);
+				try (SeekableByteChannel channel = Files.newByteChannel(path, StandardOpenOption.READ)) {
+					while (true) {
+						bb.clear();
+						int size = channel.read(bb);
+						if (size == -1) {
+							break;
+						}
+						bb.flip();
+						md.update(bb);
+					}
+				}
+				digest = DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
+			} catch (NoSuchAlgorithmException | IOException ex) {
+				LOG.error(ex.getMessage(), ex);
+			}
+			digestService.storeDigest(path, digest);
+		}
+        return digest;
     }
 
     private DigestUtils() {

@@ -1,5 +1,6 @@
 package com.guremi.boxsync;
 
+import com.guremi.boxsync.utils.DigestUtils;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import java.io.IOException;
@@ -9,10 +10,10 @@ import org.slf4j.LoggerFactory;
 
 public class FileWatcher {
     private static final Logger LOG = LoggerFactory.getLogger(FileWatcher.class);
-    private final Config config;
+    public static Config config;
 
     public FileWatcher(Config config) {
-        this.config = config;
+        FileWatcher.config = config;
     }
 
     public void register() throws IOException {
@@ -21,7 +22,7 @@ public class FileWatcher {
         co.forEach((k, v) -> {
             try {
                 Path path = Paths.get(k);
-                path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
+                path.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
             } catch (IOException ex) {
                 LOG.error(ex.getMessage(), ex);
             }
@@ -32,7 +33,13 @@ public class FileWatcher {
                 WatchKey key = watcher.take();
                 while(key != null) {
                     for (WatchEvent event : key.pollEvents()) {
-                        LOG.info("receiced {} event for file: {}", event.kind(), event.context());
+						if (event.context() instanceof Path) {
+							Path path = (Path) event.context();
+							LOG.info("receiced {} event for file: {} ({})", event.kind(), path, path.toAbsolutePath());
+                            if (Files.isReadable(path) && Files.isRegularFile(path)) {
+    							String sha1Hash = DigestUtils.getDigest(path);
+                            }
+						}
                     }
                     key.reset();
                     key = watcher.take();
