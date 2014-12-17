@@ -1,6 +1,6 @@
 package com.guremi.boxsync.utils;
 
-import com.guremi.boxsync.FileWatcher;
+import com.guremi.boxsync.App;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.nio.file.Path;
@@ -24,7 +24,7 @@ public class DigestUtilsTest {
     @Test
     public void testGetDigest() throws Exception {
         Config config = ConfigFactory.load("application.json");
-        FileWatcher.config = config;
+        App.config = config;
         Path path = Paths.get("src", "test", "resources", "testfile", "LICENSE");
         String digest = DigestUtils.getDigest(path);
 

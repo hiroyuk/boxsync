@@ -1,9 +1,0 @@
-{
-  "box": {
-    "key": "",
-    "secret": ""
-  },
-  "syncpair": {
-    "w:/music": "/music"
-  }
-}

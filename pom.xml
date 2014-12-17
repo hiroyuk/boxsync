@@ -70,6 +70,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -89,6 +90,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
 				<configuration>
 					<archive>
 						<manifest>

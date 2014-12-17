@@ -14,13 +14,16 @@ import org.slf4j.LoggerFactory;
 public class App {
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
     public static final ForkJoinPool POOL = ForkJoinPool.commonPool();
+    
+    public static Config config;
 	
 
     public static void main(String[] args) {
-        Config config = ConfigFactory.load("application.json");
+        App.config = ConfigFactory.load("application.json");
 
         try {
-            new FileWatcher(config).register();
+            new AllScaner().scan();
+            new FileWatcher().register();
         } catch (IOException ex) {
             LOG.error(ex.getMessage(), ex);
         }

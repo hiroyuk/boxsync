@@ -1,7 +1,6 @@
 package com.guremi.boxsync;
 
 import com.guremi.boxsync.utils.DigestUtils;
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 import java.io.IOException;
 import java.nio.file.*;
@@ -10,14 +9,12 @@ import org.slf4j.LoggerFactory;
 
 public class FileWatcher {
     private static final Logger LOG = LoggerFactory.getLogger(FileWatcher.class);
-    public static Config config;
 
-    public FileWatcher(Config config) {
-        FileWatcher.config = config;
+    public FileWatcher() {
     }
 
     public void register() throws IOException {
-        ConfigObject co = config.getObject("syncpair");
+        ConfigObject co = App.config.getObject("syncpair");
         WatchService watcher = FileSystems.getDefault().newWatchService();
         co.forEach((k, v) -> {
             try {
