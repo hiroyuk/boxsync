@@ -1,9 +1,11 @@
 {
   "box": {
-    "key": "",
-    "secret": ""
+    "key": "6wd5ybboxvxb544xz677cqizuuuukt5i",
+    "secret": "jPsVxIfdPjYyZWCLWQv5I0vMxaGRnCWd",
+    "storepath": "./sqlite"
   },
   "syncpair": {
-    "w:/music": "/music"
+	"/storage/vol0/movie": "/movie",
+    "/storage/vol0/music": "/music"
   }
 }
