@@ -31,7 +31,7 @@ public class ConfigService {
         return null;
     }
 
-    private void storeValue(ConfigKey key, String value) {
+    public void storeValue(ConfigKey key, String value) {
         try (Connection con = ConnectionManager.getConnection();
              PreparedStatement ps = con.prepareStatement("insert or replace into config(name, value) values (?, ?)")) {
 

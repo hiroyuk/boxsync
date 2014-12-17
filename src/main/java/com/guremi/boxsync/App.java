@@ -14,9 +14,8 @@ import org.slf4j.LoggerFactory;
 public class App {
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
     public static final ForkJoinPool POOL = ForkJoinPool.commonPool();
-    
+
     public static Config config;
-	
 
     public static void main(String[] args) {
         App.config = ConfigFactory.load("application.json");

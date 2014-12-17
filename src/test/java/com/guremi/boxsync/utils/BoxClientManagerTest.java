@@ -5,6 +5,7 @@
  */
 package com.guremi.boxsync.utils;
 
+import com.guremi.boxsync.store.BoxClientManager;
 import org.junit.Test;
 
 /**
