@@ -38,7 +38,7 @@ public class LocalServer {
         this.port = port;
     }
 
-    public String getRegirectUri() throws Exception {
+    public String getRedirectUri() throws Exception {
         if (port == -1) {
             port = getUnusedPort();
         }
