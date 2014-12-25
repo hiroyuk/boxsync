@@ -26,7 +26,8 @@ public class AllScaner {
                         .parallel()
                         .filter(p -> Files.isRegularFile(p))
                         .forEach(p -> {
-                            LOG.info("starting scan, file: {}", p.toString());
+                            Path relativepath = path.relativize(p);
+                            LOG.info("starting scan, file: {}", relativepath.toString());
                             String digest = DigestUtils.getDigest(p);
                         });
             } catch (IOException ex) {

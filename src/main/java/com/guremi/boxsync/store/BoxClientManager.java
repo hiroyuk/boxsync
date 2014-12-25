@@ -24,7 +24,6 @@ public class BoxClientManager {
     private SecureAuthStorage sas = new SecureAuthStorage();
 
     private class RestVisitor implements IBoxRestVisitor {
-
         @Override
         public void visitRequestBeforeSend(HttpRequest request, int sequenceId) {
             RequestLine line = request.getRequestLine();
@@ -46,10 +45,10 @@ public class BoxClientManager {
         String key = config.getString("box.key");
         String secret = config.getString("box.secret");
 
-        BoxRESTClient boxRESTClient = new BoxRESTClient();
-        boxRESTClient.acceptRestVisitor(new RestVisitor());
+        BoxRESTClient restClient = new BoxRESTClient();
+        restClient.acceptRestVisitor(new RestVisitor());
 
-        BoxClient client = new BoxClient(key, secret, null, null, boxRESTClient, null);
+        BoxClient client = new BoxClient(key, secret, null, null, restClient, null);
         client.setAutoRefreshOAuth(true);
         client.addOAuthRefreshListener(newAuthData -> {
             sas.saveAuth(newAuthData);
