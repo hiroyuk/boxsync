@@ -4,7 +4,6 @@ import com.box.boxjavalibv2.*;
 import com.box.boxjavalibv2.dao.*;
 import com.box.boxjavalibv2.exceptions.*;
 import com.box.restclientv2.exceptions.*;
-import com.box.restclientv2.requestsbase.BoxDefaultRequestObject;
 import com.guremi.boxsync.App;
 import com.guremi.boxsync.store.BoxClientManager;
 import com.typesafe.config.Config;
@@ -38,9 +37,6 @@ public class HelloWorld {
     }
 
     private static void showFolder(BoxClient client, String parent, String parentName, int depth) throws BoxRestException, BoxServerException, AuthFatalFailureException {
-        BoxDefaultRequestObject bdro = new BoxDefaultRequestObject();
-        bdro.getRequestExtras().addField(BoxFile.FIELD_SHA1);
-
         BoxFolder boxFolder = client.getFoldersManager().getFolder(parent, null);
         ArrayList<BoxTypedObject> folderEntries = boxFolder.getItemCollection().getEntries();
 
@@ -50,7 +46,7 @@ public class HelloWorld {
             String name = (folderEntry instanceof BoxItem) ? ((BoxItem)folderEntry).getName() : "(unknown)";
             if (folderEntry instanceof BoxFile) {
                 BoxFile bf = (BoxFile)folderEntry;
-                LOG.info("q: {}, i:{}, type: {}, id: {}, name: {}{}, class:{}", depth, i, folderEntry.getType(), folderEntry.getId(), parentName, name, bf.getExtraData(BoxFile.FIELD_SHA1));
+                LOG.info("q: {}, i:{}, type: {}, id: {}, name: {}{}, sha1:{}", depth, i, folderEntry.getType(), folderEntry.getId(), parentName, name, bf.getSha1());
             } else {
                 LOG.info("q: {}, i:{}, type: {}, id: {}, name: {}{}", depth, i, folderEntry.getType(), folderEntry.getId(), parentName, name);
             }
