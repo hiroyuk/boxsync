@@ -1,6 +1,5 @@
 package com.guremi.boxsync;
 
-import com.guremi.boxsync.utils.DigestUtils;
 import com.typesafe.config.ConfigObject;
 import java.io.IOException;
 import java.nio.file.*;
@@ -28,15 +27,15 @@ public class FileWatcher {
         Runnable runner = () -> {
             try {
                 WatchKey key = watcher.take();
-                while(key != null) {
+                while (key != null) {
                     for (WatchEvent event : key.pollEvents()) {
-						if (event.context() instanceof Path) {
-							Path path = (Path) event.context();
-							LOG.info("receiced {} event for file: {} ({})", event.kind(), path, path.toAbsolutePath());
+                        if (event.context() instanceof Path) {
+                            Path path = (Path)event.context();
+                            LOG.info("receiced {} event for file: {} ({})", event.kind(), path, path.toAbsolutePath());
                             if (Files.isReadable(path) && Files.isRegularFile(path)) {
-    							String sha1Hash = DigestUtils.getDigest(path);
+//                                String sha1Hash = DigestUtils.getDigest(path);
                             }
-						}
+                        }
                     }
                     key.reset();
                     key = watcher.take();

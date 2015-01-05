@@ -1,10 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.guremi.boxsync.utils;
 
+import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.guremi.boxsync.store.BoxClientManager;
 import org.junit.Test;
 
@@ -18,7 +14,7 @@ public class BoxClientManagerTest {
     }
 
     @Test
-    public void testGetAuthenticatedClient() {
+    public void testGetAuthenticatedClient() throws AuthFatalFailureException {
         BoxClientManager manager = new BoxClientManager();
         manager.getAuthenticatedClient();
     }

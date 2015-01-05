@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,7 +24,7 @@ public class DigestService {
     private static final ReentrantReadWriteLock LOCK = new ReentrantReadWriteLock();
     private static final DateTimeFormatter DTF = ISODateTimeFormat.dateHourMinuteSecondMillis();
 
-    public String getCachedDigest(Path path) {
+    public Optional<String> getCachedDigest(Path path) {
         LOCK.readLock().lock();
 
         try (Connection con = ConnectionManager.getConnection();
@@ -47,9 +48,9 @@ public class DigestService {
                         }
                     }
 
-                    return digest;
+                    return Optional.ofNullable(digest);
                 } else {
-                    return null;
+                    return Optional.empty();
                 }
             }
         } catch (SQLException | IOException ex) {
@@ -57,7 +58,7 @@ public class DigestService {
         } finally {
             LOCK.readLock().unlock();
         }
-        return null;
+        return Optional.empty();
     }
 
     public void storeDigest(Path path, String digest) {
@@ -80,7 +81,7 @@ public class DigestService {
         }
     }
 
-    private void clearDigest(Path path) {
+    public void clearDigest(Path path) {
         LOCK.writeLock().lock();
         try {
             _clearDigest(path);

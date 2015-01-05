@@ -2,10 +2,10 @@ package com.guremi.boxsync.store;
 
 import com.box.boxjavalibv2.BoxClient;
 import com.box.boxjavalibv2.BoxRESTClient;
+import com.box.boxjavalibv2.authorization.IAuthSecureStorage;
 import com.box.boxjavalibv2.dao.BoxOAuthToken;
 import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.box.boxjavalibv2.exceptions.BoxServerException;
-import com.box.restclientv2.IBoxRestVisitor;
 import com.box.restclientv2.exceptions.BoxRestException;
 import com.guremi.boxsync.App;
 import com.guremi.boxsync.oauth2.LocalServer;
@@ -13,32 +13,12 @@ import com.guremi.boxsync.oauth2.SecureAuthStorage;
 import com.typesafe.config.Config;
 import java.awt.Desktop;
 import java.net.URLEncoder;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.RequestLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class BoxClientManager {
     private static final Logger LOG = LoggerFactory.getLogger(BoxClientManager.class);
-    private SecureAuthStorage sas = new SecureAuthStorage();
-
-    private class RestVisitor implements IBoxRestVisitor {
-        @Override
-        public void visitRequestBeforeSend(HttpRequest request, int sequenceId) {
-            RequestLine line = request.getRequestLine();
-            LOG.debug("before send. method:{}, uri:{}", line.getMethod(), line.getUri());
-        }
-
-        @Override
-        public void visitResponseUponReceiving(HttpResponse response, int sequenceId) {
-            LOG.debug("{}", response);
-        }
-
-        @Override
-        public void visitException(Exception e, int sequenceId) {
-        }
-    }
+    private static final IAuthSecureStorage sas = new SecureAuthStorage();
 
     public BoxClient getAuthenticatedClient() throws AuthFatalFailureException {
         Config config = App.config;
@@ -46,7 +26,6 @@ public class BoxClientManager {
         String secret = config.getString("box.secret");
 
         BoxRESTClient restClient = new BoxRESTClient();
-        restClient.acceptRestVisitor(new RestVisitor());
 
         BoxClient client = new BoxClient(key, secret, null, null, restClient, null);
         client.setAutoRefreshOAuth(true);

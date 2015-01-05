@@ -1,8 +1,9 @@
 {
   "box": {
-    "key": "xxx",
-    "secret": "yyy",
-    "storepath": "./target/sqlite/"
+    "key": "6wd5ybboxvxb544xz677cqizuuuukt5i",
+    "secret": "cAHkFcsV0NbElPbMiK3DS12C9XpO2N4M",
+    "authUrl": "http://localhost:4000",
+    "storepath": "./sqlite"
   },
   "syncpair": {
     "w:/music": "/music"

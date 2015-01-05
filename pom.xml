@@ -17,7 +17,7 @@
     <dependency>
       <groupId>net.box</groupId>
       <artifactId>boxjavalibv2</artifactId>
-      <version>3.1.7</version>
+      <version>3.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe</groupId>
