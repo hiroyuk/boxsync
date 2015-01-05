@@ -83,6 +83,9 @@ public class BoxAccessUtils {
     BoxFile getFile(Path path) throws IOException {
         Path folderPath = path.getParent();
         String folderId = getFolderId(folderPath);
+        if (folderId == null) {
+            return null;
+        }
 
         BoxDefaultRequestObject requestObject = new BoxDefaultRequestObject();
         requestObject.getRequestExtras().addQueryParam("scope", "user_content");
@@ -178,10 +181,13 @@ public class BoxAccessUtils {
      * @throws IOException
      */
     public void checkAndUpload(Path localFile, Path remotePath) throws IOException {
-        Optional<String> localDigest = digestService.getCachedDigest(localFile);
-        if (localDigest.isPresent() && checkDigest(remotePath, localDigest.get())) {
+        String localDigest = DigestUtils.getDigest(localFile);
+        if (localDigest != null && checkDigest(remotePath, localDigest)) {
+            LOG.debug("sha1 agree with remote. skip.");
             return;
         }
+
+        deleteIfExist(remotePath);
 
         Path remoteFolder = remotePath.getParent();
         String folderId = getFolderId(remoteFolder);
@@ -192,6 +198,19 @@ public class BoxAccessUtils {
             BoxFileUploadRequestObject requestObject = BoxFileUploadRequestObject.uploadFileRequestObject(folderId, remotePath.getFileName().toString(), is);
             client.getFilesManager().uploadFile(requestObject);
         } catch (BoxRestException | BoxServerException | AuthFatalFailureException | BoxJSONException | InterruptedException ex) {
+            throw new IOException(ex);
+        }
+    }
+
+    public void deleteIfExist(Path remotePath) throws IOException {
+        BoxFile file = getFile(remotePath);
+        if (file == null) {
+            return;
+        }
+        BoxDefaultRequestObject object = new BoxDefaultRequestObject();
+        try {
+            client.getFilesManager().deleteFile(file.getId(), object);
+        } catch (BoxRestException | BoxServerException | AuthFatalFailureException ex) {
             throw new IOException(ex);
         }
     }
@@ -217,8 +236,6 @@ public class BoxAccessUtils {
     }
 
     public boolean checkDigest(Path filePath, String localDigest) throws IOException {
-        Path folderPath = filePath.getParent();
-        String folderId = getFolderId(folderPath);
         BoxFile file = getFile(filePath);
 
         if (file == null) {
