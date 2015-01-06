@@ -1,4 +1,4 @@
-package com.guremi.boxsync.utils;
+package com.guremi.boxsync.store;
 
 import com.box.boxjavalibv2.BoxClient;
 import com.box.boxjavalibv2.dao.BoxCollection;
@@ -13,7 +13,6 @@ import com.box.boxjavalibv2.requests.requestobjects.BoxFolderRequestObject;
 import com.box.restclientv2.exceptions.BoxRestException;
 import com.box.restclientv2.requestsbase.BoxDefaultRequestObject;
 import com.box.restclientv2.requestsbase.BoxFileUploadRequestObject;
-import com.guremi.boxsync.store.DigestService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -21,17 +20,16 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BoxAccessUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(BoxAccessUtils.class);
+public class BoxAccessService {
+    private static final Logger LOG = LoggerFactory.getLogger(BoxAccessService.class);
+    private final DigestService digestService = new DigestService();
     private final BoxClient client;
 
     private final Map<String, String> folderCache;
-    private final DigestService digestService;
 
-    public BoxAccessUtils(BoxClient client) {
+    public BoxAccessService(BoxClient client) {
         this.client = client;
         this.folderCache = Collections.synchronizedMap(new HashMap<>());
-        this.digestService = new DigestService();
     }
 
     /**
@@ -181,7 +179,7 @@ public class BoxAccessUtils {
      * @throws IOException
      */
     public void checkAndUpload(Path localFile, Path remotePath) throws IOException {
-        String localDigest = DigestUtils.getDigest(localFile);
+        String localDigest = digestService.getDigest(localFile);
         if (localDigest != null && checkDigest(remotePath, localDigest)) {
             LOG.debug("sha1 agree with remote. skip.");
             return;

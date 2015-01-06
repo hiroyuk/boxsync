@@ -2,7 +2,7 @@ package com.guremi.boxsync;
 
 import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.guremi.boxsync.store.BoxClientManager;
-import com.guremi.boxsync.utils.BoxAccessUtils;
+import com.guremi.boxsync.store.BoxAccessService;
 import com.typesafe.config.ConfigObject;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,13 +18,13 @@ import org.slf4j.LoggerFactory;
 public class AllScaner {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllScaner.class);
-    private final ThreadLocal<BoxAccessUtils> boxAccessUtils;
+    private final ThreadLocal<BoxAccessService> boxAccessUtils;
 
     public AllScaner() throws AuthFatalFailureException {
         BoxClientManager manager = new BoxClientManager();
         boxAccessUtils = ThreadLocal.withInitial(() -> {
             try {
-                return new BoxAccessUtils(manager.getAuthenticatedClient());
+                return new BoxAccessService(manager.getAuthenticatedClient());
             } catch (AuthFatalFailureException ex) {
                 LOG.error(ex.getMessage(), ex);
             }
@@ -38,7 +38,7 @@ public class AllScaner {
             try {
                 Path path = Paths.get(k);
                 Files.walk(path)
-                        .parallel()
+//                        .parallel()
                         .filter(p -> Files.isRegularFile(p))
                         .forEach(p -> {
                             Path relativepath = path.relativize(p);

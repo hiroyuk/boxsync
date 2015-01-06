@@ -1,5 +1,6 @@
 package com.guremi.boxsync;
 
+import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public class App {
         try {
             new AllScaner().scan();
             new FileWatcher().register();
-        } catch (IOException ex) {
+        } catch (IOException | AuthFatalFailureException ex) {
             LOG.error(ex.getMessage(), ex);
         }
     }

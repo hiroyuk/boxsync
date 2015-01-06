@@ -1,9 +1,8 @@
-package com.guremi.boxsync.utils;
+package com.guremi.boxsync.store;
 
 import com.box.boxjavalibv2.dao.BoxFolder;
 import com.box.boxjavalibv2.exceptions.AuthFatalFailureException;
 import com.guremi.boxsync.App;
-import com.guremi.boxsync.store.BoxClientManager;
 import com.typesafe.config.ConfigFactory;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -16,14 +15,14 @@ import org.junit.Test;
  *
  * @author htaka
  */
-public class BoxAccessUtilsTest {
+public class BoxAccessServiceTest {
     BoxClientManager clientManager = new BoxClientManager();
-    BoxAccessUtils boxAccessUtils ;
+    BoxAccessService boxAccessUtils ;
 
-    public BoxAccessUtilsTest() {
+    public BoxAccessServiceTest() {
         App.config = ConfigFactory.load("application.json");
         try {
-            boxAccessUtils = new BoxAccessUtils(clientManager.getAuthenticatedClient());
+            boxAccessUtils = new BoxAccessService(clientManager.getAuthenticatedClient());
         } catch (AuthFatalFailureException ex) {
             ex.printStackTrace();
         }

@@ -28,7 +28,7 @@ public class SecureAuthStorage implements IAuthSecureStorage {
         if (accessToken.isPresent() && refreshToken.isPresent() && expiresIn.isPresent()) {
             oauthData.put(BoxOAuthToken.FIELD_ACCESS_TOKEN, accessToken.get());
             oauthData.put(BoxOAuthToken.FIELD_REFRESH_TOKEN, refreshToken.get());
-            oauthData.put(BoxOAuthToken.FIELD_EXPIRES_IN, Integer.valueOf(expiresIn.get()));
+            oauthData.put(BoxOAuthToken.FIELD_EXPIRES_IN, 1);
 
             return new BoxOAuthToken(oauthData);
         } else {

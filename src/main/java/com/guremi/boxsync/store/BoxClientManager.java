@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 public class BoxClientManager {
     private static final Logger LOG = LoggerFactory.getLogger(BoxClientManager.class);
     private static final IAuthSecureStorage sas = new SecureAuthStorage();
+    private static final Object AUTH_SYNC = new Object();
 
     public BoxClient getAuthenticatedClient() throws AuthFatalFailureException {
         Config config = App.config;
@@ -30,13 +31,19 @@ public class BoxClientManager {
         BoxClient client = new BoxClient(key, secret, null, null, restClient, null);
         client.setAutoRefreshOAuth(true);
         client.addOAuthRefreshListener(newAuthData -> {
+            LOG.debug("auth key refreshed.");
             sas.saveAuth(newAuthData);
         });
 
-        if (sas.getAuth() != null) {
-            client.authenticateFromSecureStorage(sas);
-            LOG.debug("get auth key from storage.");
-        } else {
+        synchronized (AUTH_SYNC) {
+            if (sas.getAuth() != null) {
+                client.authenticateFromSecureStorage(sas);
+                if (client.isAuthenticated()) {
+                    LOG.debug("get auth key from storage.");
+                    return client;
+                }
+            }
+
             LocalServer localServer = new LocalServer("localhost", 4000);
             String code = "";
             try {
@@ -58,10 +65,9 @@ public class BoxClientManager {
             } catch (BoxRestException | BoxServerException ex) {
                 LOG.error(ex.getMessage(), ex);
             }
-            
-        }
 
-        client.saveAuth(sas);
+            client.saveAuth(sas);
+        }
         return client;
     }
 }
